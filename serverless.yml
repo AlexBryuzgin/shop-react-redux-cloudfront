@@ -1,28 +1,24 @@
-service: node-in-aws-web
+service: abruzgin-nodejs-aws-training
 
 frameworkVersion: '2'
 
 provider:
   name: aws
   runtime: nodejs12.x
-  # setup profile for AWS CLI.
-  # profile: node-aws
+  lambdaHashingVersion: 20201221
+  region: eu-west-1
 
 plugins:
   - serverless-finch
-  # 'serverless-single-page-app-plugin' is a custom plugin that located .serverless_plugins folder.
-  # Existing plugin (https://www.npmjs.com/package/serverless-single-page-app-plugin) doesn't have invalidate cache feature that often used during CI/CD events.
-  # How to build your own plugins: https://www.serverless.com/framework/docs/providers/aws/guide/plugins#service-local-plugin
   - serverless-single-page-app-plugin
 
 custom:
   client:
-    bucketName: node-in-aws-web-bucket
-    distributionFolder: build
-  s3BucketName: ${self:custom.client.bucketName}
-
-  ## Serverless-single-page-app-plugin configuration:
+    bucketName: abruzgin-nodejs-aws-training
+    distributionFolder: ./build
+    indexDocument: index.html
   s3LocalPath: ${self:custom.client.distributionFolder}/
+  s3BucketName: ${self:custom.client.bucketName}
 
 resources:
   Resources:
@@ -119,10 +115,9 @@ resources:
           #   IncludeCookies: 'false'
           #   Bucket: mylogs.s3.amazonaws.com
           #   Prefix: myprefix
-
-  ## In order to print out the hosted domain via `serverless info` we need to define the DomainName output for CloudFormation
+  
   Outputs:
     WebAppS3BucketOutput:
       Value: !Ref WebAppS3Bucket
     WebAppCloudFrontDistributionOutput:
-      Value: !GetAtt WebAppCloudFrontDistribution.DomainName
+      Value: !GetAtt WebAppCloudFrontDistribution.DomainName      
